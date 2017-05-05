@@ -17,6 +17,10 @@
   },
   "homepage": "https://github.com/teanocrata/my-life-platformer-game#readme",
   "devDependencies": {
-    "browser-sync": "^2.18.8"
+    "browser-sync": "^2.18.8",
+    "standard": "^10.0.2"
+  },
+  "standard": {
+    "globals": [ "PlayState", "Phaser" ]
   }
 }
