@@ -1,4 +1,5 @@
 const LEVEL_COUNT = 2
+var font
 
 function Hero (game, x, y) {
   // call Phaser.Sprite constructor
@@ -153,6 +154,7 @@ PlayState.preload = function () {
   this.game.load.spritesheet('icon:key', 'images/key_icon.png', 34, 30)
   this.game.load.image('mathBook', 'images/genericItem_color_035.png')
   this.game.load.audio('sfx:badge:', 'audio/badge.wav')
+  this.game.load.image('mario', 'images/Super Mario Bros 3 (Nintendo).png')
 }
 
 PlayState.create = function () {
@@ -168,6 +170,12 @@ PlayState.create = function () {
   this.game.add.image(0, 0, 'background')
   this._loadLevel(this.game.cache.getJSON(`level:${this.level}`))
   this._createHud()
+
+  font = this.game.add.retroFont('mario', 8, 8, Phaser.RetroFont.TEXT_SET1)
+
+  var i = this.game.add.image(this.game.world.centerX, 6 * 32, font)
+  i.tint = Math.random() * 0xFFFFFF
+  i.anchor.set(0.5, 1)
 }
 
 PlayState.update = function () {
@@ -360,8 +368,13 @@ PlayState._onHeroVsKey = function (hero, key) {
 
 PlayState._onHeroVsBadge = function (hero, mathBook) {
   this.sfx.badge.play()
-  alert(mathBook.text)
+  font.text = mathBook.text
+  window.setTimeout(clearMessage, 4000)
   mathBook.kill()
+}
+
+function clearMessage () {
+  font.text = ''
 }
 
 window.onload = function () {
