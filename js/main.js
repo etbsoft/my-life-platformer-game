@@ -152,6 +152,7 @@ PlayState.preload = function () {
   this.game.load.audio('sfx:door', 'audio/door.wav')
   this.game.load.spritesheet('icon:key', 'images/key_icon.png', 34, 30)
   this.game.load.image('mathBook', 'images/genericItem_color_035.png')
+  this.game.load.audio('sfx:badge:', 'audio/badge.wav')
 }
 
 PlayState.create = function () {
@@ -161,7 +162,8 @@ PlayState.create = function () {
     coin: this.game.add.audio('sfx:coin'),
     stomp: this.game.add.audio('sfx:stomp'),
     key: this.game.add.audio('sfx:key'),
-    door: this.game.add.audio('sfx:door')
+    door: this.game.add.audio('sfx:door'),
+    badge: this.game.add.audio('sfx:badge')
   }
   this.game.add.image(0, 0, 'background')
   this._loadLevel(this.game.cache.getJSON(`level:${this.level}`))
@@ -191,7 +193,7 @@ PlayState._loadLevel = function (data) {
   data.coins.forEach(this._spawnCoin, this)
   this._spawnDoor(data.door.x, data.door.y)
   this._spawnKey(data.key.x, data.key.y)
-  this._spawnMathBook(data.mathBook.x, data.mathBook.y)
+  this._spawnMathBook(data.mathBook.x, data.mathBook.y, data.mathBook.text)
   // enable gravity
   const GRAVITY = 1200
   this.game.physics.arcade.gravity.y = GRAVITY
@@ -265,6 +267,8 @@ PlayState._handleCollisions = function () {
                     function (hero, door) {
                       return this.hasKey && hero.body.touching.down
                     }, this)
+  this.game.physics.arcade.overlap(this.hero, this.mathBook, this._onHeroVsBadge,
+                          null, this)
 }
 
 PlayState._onHeroVsCoin = function (hero, coin) {
@@ -331,8 +335,9 @@ PlayState._spawnKey = function (x, y) {
         .start()
 }
 
-PlayState._spawnMathBook = function (x, y) {
+PlayState._spawnMathBook = function (x, y, text) {
   this.mathBook = this.bgDecoration.create(x, y, 'mathBook')
+  this.mathBook.text = text
   this.mathBook.anchor.set(0.5, 0.5)
   this.mathBook.scale.setTo(0.5, 0.5)
   this.game.physics.enable(this.mathBook)
@@ -351,6 +356,12 @@ PlayState._onHeroVsKey = function (hero, key) {
   this.sfx.key.play()
   key.kill()
   this.hasKey = true
+}
+
+PlayState._onHeroVsBadge = function (hero, mathBook) {
+  this.sfx.badge.play()
+  alert(mathBook.text)
+  mathBook.kill()
 }
 
 window.onload = function () {
