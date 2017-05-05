@@ -15,14 +15,30 @@ Hero.prototype.move = function (direction) {
   this.body.velocity.x = direction * SPEED
 }
 
+Hero.prototype.jump = function () {
+  const JUMP_SPEED = 600
+  let canJump = this.body.touching.down
+
+  if (canJump) {
+    this.body.velocity.y = -JUMP_SPEED
+  }
+
+  return canJump
+}
+
 PlayState = {}
 
 PlayState.init = function () {
   this.game.renderer.renderSession.roundPixels = true
   this.keys = this.game.input.keyboard.addKeys({
     left: Phaser.KeyCode.LEFT,
-    right: Phaser.KeyCode.RIGHT
+    right: Phaser.KeyCode.RIGHT,
+    up: Phaser.KeyCode.UP
   })
+
+  this.keys.up.onDown.add(function () {
+    this.hero.jump()
+  }, this)
 }
 
 PlayState.preload = function () {
