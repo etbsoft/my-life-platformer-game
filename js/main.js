@@ -151,6 +151,7 @@ PlayState.preload = function () {
   this.game.load.audio('sfx:key', 'audio/key.wav')
   this.game.load.audio('sfx:door', 'audio/door.wav')
   this.game.load.spritesheet('icon:key', 'images/key_icon.png', 34, 30)
+  this.game.load.image('mathBook', 'images/genericItem_color_035.png')
 }
 
 PlayState.create = function () {
@@ -190,6 +191,7 @@ PlayState._loadLevel = function (data) {
   data.coins.forEach(this._spawnCoin, this)
   this._spawnDoor(data.door.x, data.door.y)
   this._spawnKey(data.key.x, data.key.y)
+  this._spawnMathBook(data.mathBook.x, data.mathBook.y)
   // enable gravity
   const GRAVITY = 1200
   this.game.physics.arcade.gravity.y = GRAVITY
@@ -324,6 +326,22 @@ PlayState._spawnKey = function (x, y) {
   this.key.y -= 3
   this.game.add.tween(this.key)
         .to({y: this.key.y + 6}, 800, Phaser.Easing.Sinusoidal.InOut)
+        .yoyo(true)
+        .loop()
+        .start()
+}
+
+PlayState._spawnMathBook = function (x, y) {
+  this.mathBook = this.bgDecoration.create(x, y, 'mathBook')
+  this.mathBook.anchor.set(0.5, 0.5)
+  this.mathBook.scale.setTo(0.5, 0.5)
+  this.game.physics.enable(this.mathBook)
+  this.mathBook.body.allowGravity = false
+
+  // add a small 'up & down' animation via a tween
+  this.mathBook.y -= 3
+  this.game.add.tween(this.mathBook)
+        .to({y: this.mathBook.y + 8}, 600, Phaser.Easing.Sinusoidal.InOut)
         .yoyo(true)
         .loop()
         .start()
