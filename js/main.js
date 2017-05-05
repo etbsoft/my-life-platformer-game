@@ -146,6 +146,7 @@ PlayState.preload = function () {
   this.game.load.image('key', 'images/key.png')
   this.game.load.audio('sfx:key', 'audio/key.wav')
   this.game.load.audio('sfx:door', 'audio/door.wav')
+  this.game.load.spritesheet('icon:key', 'images/key_icon.png', 34, 30)
 }
 
 PlayState.create = function () {
@@ -166,6 +167,7 @@ PlayState.update = function () {
   this._handleCollisions()
   this._handleInput()
   this.coinFont.text = `x${this.coinPickupCount}`
+  this.keyIcon.frame = this.hasKey ? 1 : 0
 }
 
 PlayState._loadLevel = function (data) {
@@ -284,11 +286,14 @@ PlayState._onHeroVsDoor = function (hero, door) {
 }
 
 PlayState._createHud = function () {
+  this.keyIcon = this.game.make.image(0, 19, 'icon:key')
+  this.keyIcon.anchor.set(0, 0.5)
+  
   const NUMBERS_STR = '0123456789X '
   this.coinFont = this.game.add.retroFont('font:numbers', 20, 26,
         NUMBERS_STR, 6)
 
-  let coinIcon = this.game.make.image(0, 0, 'icon:coin')
+  let coinIcon = this.game.make.image(this.keyIcon.width + 7, 0, 'icon:coin')
   let coinScoreImg = this.game.make.image(coinIcon.x + coinIcon.width,
         coinIcon.height / 2, this.coinFont)
   coinScoreImg.anchor.set(0, 0.5)
@@ -297,6 +302,7 @@ PlayState._createHud = function () {
   this.hud.add(coinIcon)
   this.hud.position.set(10, 10)
   this.hud.add(coinScoreImg)
+  this.hud.add(this.keyIcon)
 }
 
 PlayState._spawnDoor = function (x, y) {
