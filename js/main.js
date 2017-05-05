@@ -9,6 +9,7 @@ PlayState.preload = function () {
   this.game.load.image('grass:4x1', 'images/grass_4x1.png')
   this.game.load.image('grass:2x1', 'images/grass_2x1.png')
   this.game.load.image('grass:1x1', 'images/grass_1x1.png')
+  this.game.load.image('hero', 'images/hero_stopped.png')
 }
 
 PlayState.create = function () {
