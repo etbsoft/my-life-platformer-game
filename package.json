@@ -1,0 +1,22 @@
+{
+  "name": "my-life-platformer-game",
+  "version": "0.1.0",
+  "description": "A amazing use (I hope) of @ladybenko's HTML5 game workshop",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "browser-sync start --server --files='**/*.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teanocrata/my-life-platformer-game.git"
+  },
+  "author": "Isabel Muñoz",
+  "license": "CC-BY-SA-4.0",
+  "bugs": {
+    "url": "https://github.com/teanocrata/my-life-platformer-game/issues"
+  },
+  "homepage": "https://github.com/teanocrata/my-life-platformer-game#readme",
+  "devDependencies": {
+    "browser-sync": "^2.18.8"
+  }
+}
