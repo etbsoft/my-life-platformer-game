@@ -10,6 +10,13 @@ Hero.prototype.constructor = Hero
 
 PlayState = {}
 
+PlayState.init = function () {
+  this.keys = this.game.input.keyboard.addKeys({
+    left: Phaser.KeyCode.LEFT,
+    right: Phaser.KeyCode.RIGHT
+  })
+}
+
 PlayState.preload = function () {
   this.game.load.json('level:1', 'data/level01.json')
   this.game.load.image('background', 'images/background.png')
