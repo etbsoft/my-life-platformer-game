@@ -121,6 +121,7 @@ PlayState.init = function () {
   }, this)
 
   this.coinPickupCount = 0
+  this.hasKey = false
 }
 
 PlayState.preload = function () {
@@ -143,6 +144,8 @@ PlayState.preload = function () {
   this.game.load.image('font:numbers', 'images/numbers.png')
   this.game.load.spritesheet('door', 'images/door.png', 42, 66)
   this.game.load.image('key', 'images/key.png')
+  this.game.load.audio('sfx:key', 'audio/key.wav')
+  this.game.load.audio('sfx:door', 'audio/door.wav')
 }
 
 PlayState.create = function () {
@@ -150,7 +153,9 @@ PlayState.create = function () {
   this.sfx = {
     jump: this.game.add.audio('sfx:jump'),
     coin: this.game.add.audio('sfx:coin'),
-    stomp: this.game.add.audio('sfx:stomp')
+    stomp: this.game.add.audio('sfx:stomp'),
+    key: this.game.add.audio('sfx:key'),
+    door: this.game.add.audio('sfx:door')
   }
   this.game.add.image(0, 0, 'background')
   this._loadLevel(this.game.cache.getJSON('level:1'))
@@ -245,6 +250,13 @@ PlayState._handleCollisions = function () {
   this.game.physics.arcade.collide(this.spiders, this.platforms)
   this.game.physics.arcade.overlap(this.hero, this.spiders,
         this._onHeroVsEnemy, null, this)
+  this.game.physics.arcade.overlap(this.hero, this.key, this._onHeroVsKey,
+              null, this)
+  this.game.physics.arcade.overlap(this.hero, this.door, this._onHeroVsDoor,
+                    // ignore if there is no key or the player is on air
+                    function (hero, door) {
+                      return this.hasKey && hero.body.touching.down
+                    }, this)
 }
 
 PlayState._onHeroVsCoin = function (hero, coin) {
@@ -263,6 +275,12 @@ PlayState._onHeroVsEnemy = function (hero, enemy) {
     this.sfx.stomp.play()
     this.game.state.restart()
   }
+}
+
+PlayState._onHeroVsDoor = function (hero, door) {
+  this.sfx.door.play()
+  this.game.state.restart()
+    // TODO: go to the next level instead
 }
 
 PlayState._createHud = function () {
@@ -293,6 +311,12 @@ PlayState._spawnKey = function (x, y) {
   this.key.anchor.set(0.5, 0.5)
   this.game.physics.enable(this.key)
   this.key.body.allowGravity = false
+}
+
+PlayState._onHeroVsKey = function (hero, key) {
+  this.sfx.key.play()
+  key.kill()
+  this.hasKey = true
 }
 
 window.onload = function () {
