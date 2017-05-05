@@ -80,6 +80,7 @@ PlayState.preload = function () {
   this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22)
   this.game.load.audio('sfx:coin', 'audio/coin.wav')
   this.game.load.spritesheet('spider', 'images/spider.png', 42, 32)
+  this.game.load.image('invisible-wall', 'images/invisible_wall.png')
 }
 
 PlayState.create = function () {
@@ -102,6 +103,8 @@ PlayState._loadLevel = function (data) {
   this.platforms = this.game.add.group()
   this.coins = this.game.add.group()
   this.spiders = this.game.add.group()
+  this.enemyWalls = this.game.add.group()
+  this.enemyWalls.visible = false
   // spawn all platforms
   data.platforms.forEach(this._spawnPlatform, this)
   // spawn hero and enemies
@@ -120,6 +123,8 @@ PlayState._spawnPlatform = function (platform) {
   this.game.physics.enable(sprite)
   sprite.body.allowGravity = false
   sprite.body.immovable = true
+  this._spawnEnemyWall(platform.x, platform.y, 'left')
+  this._spawnEnemyWall(platform.x + sprite.width, platform.y, 'right')
 }
 
 PlayState._spawnCharacters = function (data) {
@@ -142,6 +147,17 @@ PlayState._spawnCoin = function (coin) {
   sprite.body.allowGravity = false
 }
 
+PlayState._spawnEnemyWall = function (x, y, side) {
+  let sprite = this.enemyWalls.create(x, y, 'invisible-wall')
+    // anchor and y displacement
+  sprite.anchor.set(side === 'left' ? 1 : 0, 1)
+
+    // physic properties
+  this.game.physics.enable(sprite)
+  sprite.body.immovable = true
+  sprite.body.allowGravity = false
+}
+
 PlayState._handleInput = function () {
   if (this.keys.left.isDown) { // move hero left
     this.hero.move(-1)
@@ -153,6 +169,8 @@ PlayState._handleInput = function () {
 }
 
 PlayState._handleCollisions = function () {
+  this.game.physics.arcade.collide(this.spiders, this.platforms)
+  this.game.physics.arcade.collide(this.spiders, this.enemyWalls)
   this.game.physics.arcade.collide(this.hero, this.platforms)
   this.game.physics.arcade.overlap(this.hero, this.coins, this._onHeroVsCoin,
         null, this)
