@@ -101,10 +101,11 @@ PlayState._loadLevel = function (data) {
   // create all the groups/layers that we need
   this.platforms = this.game.add.group()
   this.coins = this.game.add.group()
+  this.spiders = this.game.add.group()
   // spawn all platforms
   data.platforms.forEach(this._spawnPlatform, this)
   // spawn hero and enemies
-  this._spawnCharacters({hero: data.hero, coins: data.coins})
+  this._spawnCharacters({hero: data.hero, coins: data.coins, spiders: data.spiders})
   // spawn important objects
   data.coins.forEach(this._spawnCoin, this)
   // enable gravity
@@ -122,6 +123,11 @@ PlayState._spawnPlatform = function (platform) {
 }
 
 PlayState._spawnCharacters = function (data) {
+  // spawn spiders
+  data.spiders.forEach(function (spider) {
+    let sprite = new Spider(this.game, spider.x, spider.y)
+    this.spiders.add(sprite)
+  }, this)
   // spawn hero
   this.hero = new Hero(this.game, data.hero.x, data.hero.y)
   this.game.add.existing(this.hero)
