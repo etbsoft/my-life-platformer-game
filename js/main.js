@@ -107,6 +107,8 @@ PlayState._spawnCoin = function (coin) {
   sprite.anchor.set(0.5, 0.5)
   sprite.animations.add('rotate', [0, 1, 2, 1], 6, true) // 6fps, looped
   sprite.animations.play('rotate')
+  this.game.physics.enable(sprite)
+  sprite.body.allowGravity = false
 }
 
 PlayState._handleInput = function () {
@@ -121,6 +123,12 @@ PlayState._handleInput = function () {
 
 PlayState._handleCollisions = function () {
   this.game.physics.arcade.collide(this.hero, this.platforms)
+  this.game.physics.arcade.overlap(this.hero, this.coins, this._onHeroVsCoin,
+        null, this)
+}
+
+PlayState._onHeroVsCoin = function (hero, coin) {
+  coin.kill()
 }
 
 window.onload = function () {
