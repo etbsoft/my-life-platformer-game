@@ -37,7 +37,10 @@ PlayState.init = function () {
   })
 
   this.keys.up.onDown.add(function () {
-    this.hero.jump()
+    let didJump = this.hero.jump()
+    if (didJump) {
+      this.sfx.jump.play()
+    }
   }, this)
 }
 
@@ -51,9 +54,14 @@ PlayState.preload = function () {
   this.game.load.image('grass:2x1', 'images/grass_2x1.png')
   this.game.load.image('grass:1x1', 'images/grass_1x1.png')
   this.game.load.image('hero', 'images/hero_stopped.png')
+  this.game.load.audio('sfx:jump', 'audio/jump.wav')
 }
 
 PlayState.create = function () {
+  // create sound entities
+  this.sfx = {
+    jump: this.game.add.audio('sfx:jump')
+  }
   this.game.add.image(0, 0, 'background')
   this._loadLevel(this.game.cache.getJSON('level:1'))
 }
