@@ -1,3 +1,5 @@
+const LEVEL_COUNT = 2
+
 function Hero (game, x, y) {
   // call Phaser.Sprite constructor
   Phaser.Sprite.call(this, game, x, y, 'hero')
@@ -105,7 +107,7 @@ Spider.prototype.die = function () {
 
 PlayState = {}
 
-PlayState.init = function () {
+PlayState.init = function (data) {
   this.game.renderer.renderSession.roundPixels = true
   this.keys = this.game.input.keyboard.addKeys({
     left: Phaser.KeyCode.LEFT,
@@ -122,9 +124,11 @@ PlayState.init = function () {
 
   this.coinPickupCount = 0
   this.hasKey = false
+  this.level = (data.level || 0) % LEVEL_COUNT
 }
 
 PlayState.preload = function () {
+  this.game.load.json('level:0', 'data/level00.json')
   this.game.load.json('level:1', 'data/level01.json')
   this.game.load.image('background', 'images/background.png')
   this.game.load.image('ground', 'images/ground.png')
@@ -159,7 +163,7 @@ PlayState.create = function () {
     door: this.game.add.audio('sfx:door')
   }
   this.game.add.image(0, 0, 'background')
-  this._loadLevel(this.game.cache.getJSON('level:1'))
+  this._loadLevel(this.game.cache.getJSON(`level:${this.level}`))
   this._createHud()
 }
 
@@ -288,7 +292,7 @@ PlayState._onHeroVsDoor = function (hero, door) {
 PlayState._createHud = function () {
   this.keyIcon = this.game.make.image(0, 19, 'icon:key')
   this.keyIcon.anchor.set(0, 0.5)
-  
+
   const NUMBERS_STR = '0123456789X '
   this.coinFont = this.game.add.retroFont('font:numbers', 20, 26,
         NUMBERS_STR, 6)
@@ -335,5 +339,5 @@ PlayState._onHeroVsKey = function (hero, key) {
 window.onload = function () {
   let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game')
   game.state.add('play', PlayState)
-  game.state.start('play')
+  game.state.start('play', true, false, {level: 0})
 }
