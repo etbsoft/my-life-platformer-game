@@ -43,10 +43,13 @@ PlayState.create = function () {
 }
 
 PlayState.update = function () {
+  this._handleCollisions()
   this._handleInput()
 }
 
 PlayState._loadLevel = function (data) {
+  // create all the groups/layers that we need
+  this.platforms = this.game.add.group()
   // spawn all platforms
   data.platforms.forEach(this._spawnPlatform, this)
   // spawn hero and enemies
@@ -57,7 +60,10 @@ PlayState._loadLevel = function (data) {
 }
 
 PlayState._spawnPlatform = function (platform) {
-  this.game.add.sprite(platform.x, platform.y, platform.image)
+  let sprite = this.platforms.create(
+    platform.x, platform.y, platform.image
+  )
+  this.game.physics.enable(sprite)
 }
 
 PlayState._spawnCharacters = function (data) {
@@ -74,6 +80,10 @@ PlayState._handleInput = function () {
   } else { // stop
     this.hero.move(0)
   }
+}
+
+PlayState._handleCollisions = function () {
+  this.game.physics.arcade.collide(this.hero, this.platforms)
 }
 
 window.onload = function () {
