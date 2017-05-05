@@ -141,6 +141,8 @@ PlayState.preload = function () {
   this.game.load.audio('sfx:stomp', 'audio/stomp.wav')
   this.game.load.image('icon:coin', 'images/coin_icon.png')
   this.game.load.image('font:numbers', 'images/numbers.png')
+  this.game.load.spritesheet('door', 'images/door.png', 42, 66)
+  this.game.load.image('key', 'images/key.png')
 }
 
 PlayState.create = function () {
@@ -162,6 +164,7 @@ PlayState.update = function () {
 }
 
 PlayState._loadLevel = function (data) {
+  this.bgDecoration = this.game.add.group()
   // create all the groups/layers that we need
   this.platforms = this.game.add.group()
   this.coins = this.game.add.group()
@@ -174,6 +177,8 @@ PlayState._loadLevel = function (data) {
   this._spawnCharacters({hero: data.hero, coins: data.coins, spiders: data.spiders})
   // spawn important objects
   data.coins.forEach(this._spawnCoin, this)
+  this._spawnDoor(data.door.x, data.door.y)
+  this._spawnKey(data.key.x, data.key.y)
   // enable gravity
   const GRAVITY = 1200
   this.game.physics.arcade.gravity.y = GRAVITY
@@ -274,6 +279,20 @@ PlayState._createHud = function () {
   this.hud.add(coinIcon)
   this.hud.position.set(10, 10)
   this.hud.add(coinScoreImg)
+}
+
+PlayState._spawnDoor = function (x, y) {
+  this.door = this.bgDecoration.create(x, y, 'door')
+  this.door.anchor.setTo(0.5, 1)
+  this.game.physics.enable(this.door)
+  this.door.body.allowGravity = false
+}
+
+PlayState._spawnKey = function (x, y) {
+  this.key = this.bgDecoration.create(x, y, 'key')
+  this.key.anchor.set(0.5, 0.5)
+  this.game.physics.enable(this.key)
+  this.key.body.allowGravity = false
 }
 
 window.onload = function () {
