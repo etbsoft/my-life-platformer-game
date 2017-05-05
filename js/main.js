@@ -48,6 +48,15 @@ Spider.SPEED = 100
 Spider.prototype = Object.create(Phaser.Sprite.prototype)
 Spider.prototype.constructor = Spider
 
+Spider.prototype.update = function () {
+    // check against walls and reverse direction if necessary
+  if (this.body.touching.right || this.body.blocked.right) {
+    this.body.velocity.x = -Spider.SPEED // turn left
+  } else if (this.body.touching.left || this.body.blocked.left) {
+    this.body.velocity.x = Spider.SPEED // turn right
+  }
+}
+
 PlayState = {}
 
 PlayState.init = function () {
