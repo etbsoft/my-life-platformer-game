@@ -1,6 +1,7 @@
-function Hero(game, x, y) {
+function Hero (game, x, y) {
   // call Phaser.Sprite constructor
   Phaser.Sprite.call(this, game, x, y, 'hero')
+  this.anchor.set(0.5, 0.5)
 }
 
 // inherit from Phaser.Sprite
@@ -29,12 +30,19 @@ PlayState.create = function () {
 PlayState._loadLevel = function (data) {
   // spawn all platforms
   data.platforms.forEach(this._spawnPlatform, this)
+  // spawn hero and enemies
+  this._spawnCharacters({hero: data.hero})
 }
 
 PlayState._spawnPlatform = function (platform) {
   this.game.add.sprite(platform.x, platform.y, platform.image)
 }
 
+PlayState._spawnCharacters = function (data) {
+  // spawn hero
+  this.hero = new Hero(this.game, data.hero.x, data.hero.y)
+  this.game.add.existing(this.hero)
+}
 window.onload = function () {
   let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game')
   game.state.add('play', PlayState)
