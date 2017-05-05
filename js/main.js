@@ -40,6 +40,7 @@ function Spider (game, x, y) {
   this.animations.add('crawl', [0, 1, 2], 8, true)
   this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12)
   this.animations.play('crawl')
+  this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12)
 
     // physic properties
   this.game.physics.enable(this)
@@ -62,6 +63,14 @@ Spider.prototype.update = function () {
   }
 }
 
+Spider.prototype.die = function () {
+  this.body.enable = false
+
+  this.animations.play('die').onComplete.addOnce(function () {
+    this.kill()
+  }, this)
+}
+
 PlayState = {}
 
 PlayState.init = function () {
@@ -78,6 +87,8 @@ PlayState.init = function () {
       this.sfx.jump.play()
     }
   }, this)
+
+  this.coinPickupCount = 0
 }
 
 PlayState.preload = function () {
@@ -198,13 +209,14 @@ PlayState._handleCollisions = function () {
 PlayState._onHeroVsCoin = function (hero, coin) {
   this.sfx.coin.play()
   coin.kill()
+  this.coinPickupCount++
 }
 
 PlayState._onHeroVsEnemy = function (hero, enemy) {
   if (hero.body.velocity.y > 0) {
     hero.bounce()
     // kill enemies when hero is falling
-    enemy.kill()
+    enemy.die()
     this.sfx.stomp.play()
   } else {
     this.sfx.stomp.play()
