@@ -15,6 +15,7 @@ Hero.prototype.move = function (direction) {
 PlayState = {}
 
 PlayState.init = function () {
+  this.game.renderer.renderSession.roundPixels = true
   this.keys = this.game.input.keyboard.addKeys({
     left: Phaser.KeyCode.LEFT,
     right: Phaser.KeyCode.RIGHT
@@ -38,6 +39,10 @@ PlayState.create = function () {
   this._loadLevel(this.game.cache.getJSON('level:1'))
 }
 
+PlayState.update = function () {
+  this._handleInput()
+}
+
 PlayState._loadLevel = function (data) {
   // spawn all platforms
   data.platforms.forEach(this._spawnPlatform, this)
@@ -54,6 +59,15 @@ PlayState._spawnCharacters = function (data) {
   this.hero = new Hero(this.game, data.hero.x, data.hero.y)
   this.game.add.existing(this.hero)
 }
+
+PlayState._handleInput = function () {
+  if (this.keys.left.isDown) { // move hero left
+    this.hero.move(-1)
+  } else if (this.keys.right.isDown) { // move hero right
+    this.hero.move(1)
+  }
+}
+
 window.onload = function () {
   let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game')
   game.state.add('play', PlayState)
