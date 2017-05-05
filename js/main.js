@@ -8,6 +8,10 @@ function Hero (game, x, y) {
 Hero.prototype = Object.create(Phaser.Sprite.prototype)
 Hero.prototype.constructor = Hero
 
+Hero.prototype.move = function (direction) {
+  this.x += direction * 2.5 // 2.5 pixels each frame
+}
+
 PlayState = {}
 
 PlayState.init = function () {
