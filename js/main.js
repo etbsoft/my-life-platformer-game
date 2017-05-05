@@ -279,14 +279,13 @@ PlayState._onHeroVsEnemy = function (hero, enemy) {
     this.sfx.stomp.play()
   } else {
     this.sfx.stomp.play()
-    this.game.state.restart()
+    this.game.state.restart(true, false, {level: this.level})
   }
 }
 
 PlayState._onHeroVsDoor = function (hero, door) {
   this.sfx.door.play()
-  this.game.state.restart()
-    // TODO: go to the next level instead
+  this.game.state.restart(true, false, { level: this.level + 1 })
 }
 
 PlayState._createHud = function () {
