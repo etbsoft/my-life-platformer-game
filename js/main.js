@@ -1,3 +1,12 @@
+function Hero(game, x, y) {
+  // call Phaser.Sprite constructor
+  Phaser.Sprite.call(this, game, x, y, 'hero')
+}
+
+// inherit from Phaser.Sprite
+Hero.prototype = Object.create(Phaser.Sprite.prototype)
+Hero.prototype.constructor = Hero
+
 PlayState = {}
 
 PlayState.preload = function () {
