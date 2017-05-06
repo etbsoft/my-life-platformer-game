@@ -1,9 +1,11 @@
 var MyLifePlatformerGame = {}
+var font
 
 MyLifePlatformerGame.Params = {
-  baseWidth: 1920,
-  baseHeight: 1080,
-  iconSize: 364
+  baseWidth: 960,
+  baseHeight: 600,
+  iconSize: 364,
+  LEVEL_COUNT: 2
 }
 
 MyLifePlatformerGame.Boot = function (game) {}
@@ -125,9 +127,6 @@ MyLifePlatformerGame.MainMenu.prototype = {
   }
 }
 
-const LEVEL_COUNT = 2
-var font
-
 function Hero (game, x, y) {
   // call Phaser.Sprite constructor
   Phaser.Sprite.call(this, game, x, y, 'hero')
@@ -138,6 +137,7 @@ function Hero (game, x, y) {
   this.animations.add('run', [1, 2], 8, true) // 8fps looped
   this.animations.add('jump', [3])
   this.animations.add('fall', [4])
+  this.scale.setTo(scaleX(this.width), scaleX(this.height))
 }
 
 // inherit from Phaser.Sprite
@@ -149,9 +149,9 @@ Hero.prototype.move = function (direction) {
   this.body.velocity.x = direction * SPEED
 
   if (this.body.velocity.x < 0) {
-    this.scale.x = -1
+    this.scale.x = -1 * scaleX(1)
   } else if (this.body.velocity.x > 0) {
-    this.scale.x = 1
+    this.scale.x = 1 * scaleX(1)
   }
 }
 
@@ -195,6 +195,7 @@ Hero.prototype.update = function () {
 
 function Spider (game, x, y) {
   Phaser.Sprite.call(this, game, x, y, 'spider')
+  this.scale.setTo(scaleX(this.width), scaleX(this.height))
 
     // anchor
   this.anchor.set(0.5)
@@ -253,7 +254,7 @@ MyLifePlatformerGame.PlayState.prototype = {
 
     this.coinPickupCount = 0
     this.hasKey = false
-    this.level = (data.level || 0) % LEVEL_COUNT
+    this.level = (data.level || 0) % MyLifePlatformerGame.Params.LEVEL_COUNT
   },
   preload: function () {
     this.game.load.json('level:0', 'data/level00.json')
@@ -294,7 +295,9 @@ MyLifePlatformerGame.PlayState.prototype = {
       door: this.game.add.audio('sfx:door'),
       badge: this.game.add.audio('sfx:badge')
     }
-    this.game.add.image(0, 0, 'background')
+    this.background = this.game.add.image(0, 0, 'background')
+    this.background.height = this.background.height * scaleY(this.background.height)
+    this.background.width = this.background.width * scaleX(this.background.width)
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`))
     this._createHud()
 
@@ -328,23 +331,24 @@ MyLifePlatformerGame.PlayState.prototype = {
     this._spawnKey(data.key.x, data.key.y)
     this._spawnMathBook(data.mathBook.x, data.mathBook.y, data.mathBook.text)
     // enable gravity
-    const GRAVITY = 1200
+    const GRAVITY = 1200 / scaleY(1)
     this.game.physics.arcade.gravity.y = GRAVITY
   },
   _spawnPlatform: function (platform) {
     let sprite = this.platforms.create(
-      platform.x, platform.y, platform.image
+      platform.x * scaleX(platform.x), platform.y * scaleY(platform.y), platform.image
     )
+    sprite.scale.setTo(scaleX(platform.x), scaleY(platform.y))
     this.game.physics.enable(sprite)
     sprite.body.allowGravity = false
     sprite.body.immovable = true
-    this._spawnEnemyWall(platform.x, platform.y, 'left')
-    this._spawnEnemyWall(platform.x + sprite.width, platform.y, 'right')
+    this._spawnEnemyWall(platform.x * scaleX(platform.x), platform.y * scaleY(platform.y), 'left')
+    this._spawnEnemyWall(platform.x * scaleX(platform.x) + sprite.width, platform.y * scaleY(platform.y), 'right')
   },
   _spawnCharacters: function (data) {
     // spawn spiders
     data.spiders.forEach(function (spider) {
-      let sprite = new Spider(this.game, spider.x, spider.y)
+      let sprite = new Spider(this.game, spider.x * scaleX(spider.x), spider.y * scaleY(spider.y))
       this.spiders.add(sprite)
     }, this)
     // spawn hero
@@ -352,7 +356,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     this.game.add.existing(this.hero)
   },
   _spawnCoin: function (coin) {
-    let sprite = this.coins.create(coin.x, coin.y, 'coin')
+    let sprite = this.coins.create(coin.x * scaleX(coin.x), coin.y * scaleY(coin.y), 'coin')
     sprite.anchor.set(0.5, 0.5)
     sprite.animations.add('rotate', [0, 1, 2, 1], 6, true) // 6fps, looped
     sprite.animations.play('rotate')
@@ -360,7 +364,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     sprite.body.allowGravity = false
   },
   _spawnEnemyWall: function (x, y, side) {
-    let sprite = this.enemyWalls.create(x, y, 'invisible-wall')
+    let sprite = this.enemyWalls.create(x * scaleX(x), y * scaleY(y), 'invisible-wall')
       // anchor and y displacement
     sprite.anchor.set(side === 'left' ? 1 : 0, 1)
 
@@ -371,9 +375,9 @@ MyLifePlatformerGame.PlayState.prototype = {
   },
   _handleInput: function () {
     if (this.keys.left.isDown) { // move hero left
-      this.hero.move(-1)
+      this.hero.move(-1 * scaleX(1))
     } else if (this.keys.right.isDown) { // move hero right
-      this.hero.move(1)
+      this.hero.move(1 * scaleX(1))
     } else { // stop
       this.hero.move(0)
     }
@@ -429,21 +433,23 @@ MyLifePlatformerGame.PlayState.prototype = {
     let coinScoreImg = this.game.make.image(coinIcon.x + coinIcon.width,
           coinIcon.height / 2, this.coinFont)
     coinScoreImg.anchor.set(0, 0.5)
+    coinScoreImg.scale.setTo(scaleX(coinScoreImg.scale.x), scaleY(coinScoreImg.scale.y))
 
     this.hud = this.game.add.group()
     this.hud.add(coinIcon)
-    this.hud.position.set(10, 10)
+    this.hud.position.set(10 * scaleX(10), 10 * scaleY(10))
     this.hud.add(coinScoreImg)
     this.hud.add(this.keyIcon)
   },
   _spawnDoor: function (x, y) {
-    this.door = this.bgDecoration.create(x, y, 'door')
+    this.door = this.bgDecoration.create(x * scaleX(x), y * scaleY(y), 'door')
     this.door.anchor.setTo(0.5, 1)
+    this.door.scale.setTo(scaleX(this.door.scale.x), scaleY(this.door.scale.y))
     this.game.physics.enable(this.door)
     this.door.body.allowGravity = false
   },
   _spawnKey: function (x, y) {
-    this.key = this.bgDecoration.create(x, y, 'key')
+    this.key = this.bgDecoration.create(x * scaleX(x), y * scaleY(y), 'key')
     this.key.anchor.set(0.5, 0.5)
     this.game.physics.enable(this.key)
     this.key.body.allowGravity = false
@@ -456,7 +462,7 @@ MyLifePlatformerGame.PlayState.prototype = {
           .start()
   },
   _spawnMathBook: function (x, y, text) {
-    this.mathBook = this.bgDecoration.create(x, y, 'mathBook')
+    this.mathBook = this.bgDecoration.create(x * scaleX(x), y * scaleY(y), 'mathBook')
     this.mathBook.text = text
     this.mathBook.anchor.set(0.5, 0.5)
     this.mathBook.scale.setTo(0.5, 0.5)
@@ -486,6 +492,14 @@ MyLifePlatformerGame.PlayState.prototype = {
 
 function clearMessage () {
   font.text = ''
+}
+
+function scaleX (x) {
+  return window.innerWidth / MyLifePlatformerGame.Params.baseWidth
+}
+
+function scaleY (y) {
+  return window.innerHeight / MyLifePlatformerGame.Params.baseHeight
 }
 
 window.onload = function () {
