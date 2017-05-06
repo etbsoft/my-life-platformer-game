@@ -309,6 +309,9 @@ MyLifePlatformerGame.PlayState.prototype = {
     var i = this.game.add.image(this.game.world.centerX, 6 * 32, font)
     i.tint = Math.random() * 0xFFFFFF
     i.anchor.set(0.5, 1)
+
+    this.hero.inputEnabled = true
+    this.hero.input.enableDrag()
   },
   update: function () {
     this._handleCollisions()
