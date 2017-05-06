@@ -129,9 +129,9 @@ MyLifePlatformerGame.MainMenu.prototype = {
   }
 }
 
-function Hero (game, x, y) {
+function Heroine (game, x, y) {
   // call Phaser.Sprite constructor
-  Phaser.Sprite.call(this, game, x, y, 'hero')
+  Phaser.Sprite.call(this, game, x, y, 'heroine')
   this.anchor.set(0.5, 0.5)
   this.game.physics.enable(this)
   this.body.collideWorldBounds = true
@@ -144,10 +144,10 @@ function Hero (game, x, y) {
 }
 
 // inherit from Phaser.Sprite
-Hero.prototype = Object.create(Phaser.Sprite.prototype)
-Hero.prototype.constructor = Hero
+Heroine.prototype = Object.create(Phaser.Sprite.prototype)
+Heroine.prototype.constructor = Heroine
 
-Hero.prototype.move = function (direction) {
+Heroine.prototype.move = function (direction) {
   const SPEED = 200
   this.body.velocity.x = direction * SPEED
 
@@ -158,7 +158,7 @@ Hero.prototype.move = function (direction) {
   }
 }
 
-Hero.prototype.jump = function () {
+Heroine.prototype.jump = function () {
   const JUMP_SPEED = 600
   let canJump = this.body.touching.down
 
@@ -169,12 +169,12 @@ Hero.prototype.jump = function () {
   return canJump
 }
 
-Hero.prototype.bounce = function () {
+Heroine.prototype.bounce = function () {
   const BOUNCE_SPEED = 200
   this.body.velocity.y = -BOUNCE_SPEED
 }
 
-Hero.prototype._getAnimationName = function () {
+Heroine.prototype._getAnimationName = function () {
   let name = 'stop' // default animation
 
   if (this.body.velocity.y < 0) {
@@ -188,7 +188,7 @@ Hero.prototype._getAnimationName = function () {
   return name
 }
 
-Hero.prototype.update = function () {
+Heroine.prototype.update = function () {
     // update sprite animation, if it needs changing
   let animationName = this._getAnimationName()
   if (this.animations.name !== animationName) {
@@ -249,7 +249,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     })
 
     this.keys.up.onDown.add(function () {
-      let didJump = this.hero.jump()
+      let didJump = this.Heroine.jump()
       if (didJump) {
         this.sfx.jump.play()
       }
@@ -270,7 +270,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     this.game.load.image('grass:4x1', 'images/grass_4x1.png')
     this.game.load.image('grass:2x1', 'images/grass_2x1.png')
     this.game.load.image('grass:1x1', 'images/grass_1x1.png')
-    this.game.load.spritesheet('hero', 'images/hero.png', 36, 42)
+    this.game.load.spritesheet('heroine', 'images/Archer.png', 60, 60)
     this.game.load.audio('sfx:jump', 'audio/jump.wav')
     this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22)
     this.game.load.audio('sfx:coin', 'audio/coin.wav')
@@ -310,8 +310,8 @@ MyLifePlatformerGame.PlayState.prototype = {
     i.tint = Math.random() * 0xFFFFFF
     i.anchor.set(0.5, 1)
 
-    this.hero.inputEnabled = true
-    this.hero.input.enableDrag()
+    this.Heroine.inputEnabled = true
+    this.Heroine.input.enableDrag()
   },
   update: function () {
     this._handleCollisions()
@@ -332,8 +332,8 @@ MyLifePlatformerGame.PlayState.prototype = {
     this.enemyWalls.visible = false
     // spawn all platforms
     data.platforms.forEach(this._spawnPlatform, this)
-    // spawn hero and enemies
-    this._spawnCharacters({hero: data.hero, coins: data.coins, spiders: data.spiders})
+    // spawn Heroine and enemies
+    this._spawnCharacters({heroine: data.heroine, coins: data.coins, spiders: data.spiders})
     // spawn important objects
     data.coins.forEach(this._spawnCoin, this)
     this._spawnDoor(data.door.x, data.door.y)
@@ -361,9 +361,9 @@ MyLifePlatformerGame.PlayState.prototype = {
       sprite.scale.setTo(scaleX(), scaleY())
       this.spiders.add(sprite)
     }, this)
-    // spawn hero
-    this.hero = new Hero(this.game, data.hero.x * scaleX(), data.hero.y * scaleY())
-    this.game.add.existing(this.hero)
+    // spawn Heroine
+    this.Heroine = new Heroine(this.game, data.heroine.x * scaleX(), data.heroine.y * scaleY())
+    this.game.add.existing(this.Heroine)
   },
   _spawnCoin: function (coin) {
     let sprite = this.coins.create(coin.x * scaleX(), coin.y * scaleY(), 'coin')
@@ -385,42 +385,42 @@ MyLifePlatformerGame.PlayState.prototype = {
     sprite.body.allowGravity = false
   },
   _handleInput: function () {
-    if (this.keys.left.isDown) { // move hero left
-      this.hero.move(-1 * scaleX())
-    } else if (this.keys.right.isDown) { // move hero right
-      this.hero.move(1 * scaleX())
+    if (this.keys.left.isDown) { // move Heroine left
+      this.Heroine.move(-1 * scaleX())
+    } else if (this.keys.right.isDown) { // move Heroine right
+      this.Heroine.move(1 * scaleX())
     } else { // stop
-      this.hero.move(0)
+      this.Heroine.move(0)
     }
   },
   _handleCollisions: function () {
     this.game.physics.arcade.collide(this.spiders, this.platforms)
     this.game.physics.arcade.collide(this.spiders, this.enemyWalls)
-    this.game.physics.arcade.collide(this.hero, this.platforms)
-    this.game.physics.arcade.overlap(this.hero, this.coins, this._onHeroVsCoin,
+    this.game.physics.arcade.collide(this.Heroine, this.platforms)
+    this.game.physics.arcade.overlap(this.Heroine, this.coins, this._onHeroineVsCoin,
           null, this)
     this.game.physics.arcade.collide(this.spiders, this.platforms)
-    this.game.physics.arcade.overlap(this.hero, this.spiders,
-          this._onHeroVsEnemy, null, this)
-    this.game.physics.arcade.overlap(this.hero, this.key, this._onHeroVsKey,
+    this.game.physics.arcade.overlap(this.Heroine, this.spiders,
+          this._onHeroineVsEnemy, null, this)
+    this.game.physics.arcade.overlap(this.Heroine, this.key, this._onHeroineVsKey,
                 null, this)
-    this.game.physics.arcade.overlap(this.hero, this.door, this._onHeroVsDoor,
+    this.game.physics.arcade.overlap(this.Heroine, this.door, this._onHeroineVsDoor,
                       // ignore if there is no key or the player is on air
-                      function (hero, door) {
-                        return this.hasKey && hero.body.touching.down
+                      function (Heroine, door) {
+                        return this.hasKey && Heroine.body.touching.down
                       }, this)
-    this.game.physics.arcade.overlap(this.hero, this.mathBook, this._onHeroVsBadge,
+    this.game.physics.arcade.overlap(this.Heroine, this.mathBook, this._onHeroineVsBadge,
                             null, this)
   },
-  _onHeroVsCoin: function (hero, coin) {
+  _onHeroineVsCoin: function (Heroine, coin) {
     this.sfx.coin.play()
     coin.kill()
     this.coinPickupCount++
   },
-  _onHeroVsEnemy: function (hero, enemy) {
-    if (hero.body.velocity.y > 0) {
-      hero.bounce()
-      // kill enemies when hero is falling
+  _onHeroineVsEnemy: function (Heroine, enemy) {
+    if (Heroine.body.velocity.y > 0) {
+      Heroine.bounce()
+      // kill enemies when Heroine is falling
       enemy.die()
       this.sfx.stomp.play()
     } else {
@@ -428,7 +428,7 @@ MyLifePlatformerGame.PlayState.prototype = {
       this.game.state.restart(true, false, {level: this.level})
     }
   },
-  _onHeroVsDoor: function (hero, door) {
+  _onHeroineVsDoor: function (Heroine, door) {
     this.sfx.door.play()
     this.game.state.restart(true, false, { level: this.level + 1 })
   },
@@ -488,12 +488,12 @@ MyLifePlatformerGame.PlayState.prototype = {
           .loop()
           .start()
   },
-  _onHeroVsKey: function (hero, key) {
+  _onHeroineVsKey: function (Heroine, key) {
     this.sfx.key.play()
     key.kill()
     this.hasKey = true
   },
-  _onHeroVsBadge: function (hero, mathBook) {
+  _onHeroineVsBadge: function (Heroine, mathBook) {
     this.sfx.badge.play()
     font.text = mathBook.text
     window.setTimeout(clearMessage, 4000)
