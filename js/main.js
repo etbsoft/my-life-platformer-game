@@ -4,8 +4,26 @@ var font
 MyLifePlatformerGame.Params = {
   baseWidth: 960,
   baseHeight: 600,
-  iconSize: 364,
+  iconSize: 250,
   LEVEL_COUNT: 2
+}
+
+MyLifePlatformerGame._scaleSprite = function (sprite, maintainAspectRatio) {
+  var scale = this._getSpriteScale(sprite)
+  if (maintainAspectRatio) {
+    var maxRatio = Math.max(scale.x, scale.y)
+    sprite.scale.setTo(maxRatio, maxRatio)
+  } else {
+    sprite.scale.setTo(scale.x, scale.y)
+  }
+}
+
+MyLifePlatformerGame._getSpriteScale = function (sprite) {
+  // Sprite needs to fit in either width or height
+  var widthRatio = sprite.game.canvas.width / MyLifePlatformerGame.Params.baseWidth
+  var heightRatio = sprite.game.canvas.height / MyLifePlatformerGame.Params.baseHeight
+
+  return {x: widthRatio, y: heightRatio}
 }
 
 MyLifePlatformerGame.Boot = function (game) {}
@@ -34,7 +52,7 @@ MyLifePlatformerGame.Loading.prototype = {
 
     this.load.image('gametitle', 'images/gametitle.png')
     this.load.image('onePlayerGame', 'images/one_player_game.png')
-    this.load.spritesheet('settings', 'images/sheet_black2x.png', 100, 100)
+    this.load.spritesheet('settings', 'images/sheet_black2x.png', 25, 25)
     this.load.image('welcomeBackground', 'images/welcomeBackground.png')
   },
   create: function () {
@@ -48,12 +66,11 @@ MyLifePlatformerGame.MainMenu = function (game) {
 MyLifePlatformerGame.MainMenu.prototype = {
   create: function () {
     this.background = this.add.image(0, 0, 'welcomeBackground')
-    this.background.height = this.game.height
-    this.background.width = this.game.width
+    MyLifePlatformerGame._scaleSprite(this.background, true)
 
     this.title = this.game.add.image(this.world.centerX, this.world.centerY - this.game.height / 5, 'gametitle')
     this.title.anchor.setTo(0.5)
-    this.scaleSprite(this.title, this.game.width, this.game.height / 3, 50, 1)
+    MyLifePlatformerGame._scaleSprite(this.title)
 
     this.playButton = this.game.add.button(this.world.centerX, this.world.centerY + this.game.height / 5, 'onePlayerGame', this.playMyLifePlatformerGame, this)
     this.playButton.anchor.setTo(0.5)
@@ -63,49 +80,34 @@ MyLifePlatformerGame.MainMenu.prototype = {
     this.infoButton.anchor.setTo(0.5)
     this.infoButton.frame = 9
     this.infoButton.clicked = false
-    this.scaleSprite(this.infoButton, this.game.width, this.game.height / 3, 50, 0.5)
+    MyLifePlatformerGame._scaleSprite(this.infoButton, true)
     this.infoButton.x = this.world.centerX - this.infoButton.width / 2
 
     this.audioButton = this.game.add.button(this.world.centerX + MyLifePlatformerGame.Params.iconSize / 2, this.world.centerY + this.game.height / 3, 'settings', this.setAudio, this)
     this.audioButton.anchor.setTo(0.5)
     this.audioButton.frame = 5
     this.audioButton.clicked = false
-    this.scaleSprite(this.audioButton, this.game.width, this.game.height / 3, 50, 0.5)
+    MyLifePlatformerGame._scaleSprite(this.audioButton, true)
     this.audioButton.x = this.world.centerX + this.infoButton.width / 2
   },
-  scaleSprite: function (sprite, availableSpaceWidth, availableSpaceHeight, padding, scaleMultiplier) {
-    var scale = this.getSpriteScale(sprite._frame.width, sprite._frame.height, availableSpaceWidth, availableSpaceHeight, padding)
-    sprite.scale.x = scale * scaleMultiplier
-    sprite.scale.y = scale * scaleMultiplier
-  },
-  getSpriteScale: function (spriteWidth, spriteHeight, availableSpaceWidth, availableSpaceHeight, minPadding) {
-    var ratio = 1
-    var currentDevicePixelRatio = window.devicePixelRatio
-    // Sprite needs to fit in either width or height
-    var widthRatio = (spriteWidth * currentDevicePixelRatio + 2 * minPadding) / availableSpaceWidth
-    var heightRatio = (spriteHeight * currentDevicePixelRatio + 2 * minPadding) / availableSpaceHeight
-    if (widthRatio > 1 || heightRatio > 1) {
-      ratio = 1 / Math.max(widthRatio, heightRatio)
-    }
-    return ratio * currentDevicePixelRatio
-  },
+
   resize: function (width, height) {
     this.background.height = height
     this.background.width = width
 
-    this.scaleSprite(this.title, width, height / 3, 50, 1)
+    MyLifePlatformerGame._scaleSprite(this.title)
     this.title.x = this.world.centerX
     this.title.y = this.world.centerY - height / 3
 
-    this.scaleSprite(this.playButton, width, height / 3, 50, 1)
+    MyLifePlatformerGame._scaleSprite(this.playButton)
     this.playButton.x = this.world.centerX
     this.playButton.y = this.world.centerY
 
-    this.scaleSprite(this.infoButton, width, height / 3, 50, 0.5)
+    MyLifePlatformerGame._scaleSprite(this.infoButton)
     this.infoButton.x = this.world.centerX - this.infoButton.width / 2
     this.infoButton.y = this.world.centerY + height / 3
 
-    this.scaleSprite(this.audioButton, width, height / 3, 50, 0.5)
+    MyLifePlatformerGame._scaleSprite(this.audioButton)
     this.audioButton.x = this.world.centerX + this.audioButton.width / 2
     this.audioButton.y = this.world.centerY + height / 3
   },
@@ -137,7 +139,8 @@ function Hero (game, x, y) {
   this.animations.add('run', [1, 2], 8, true) // 8fps looped
   this.animations.add('jump', [3])
   this.animations.add('fall', [4])
-  this.scale.setTo(scaleX(), scaleY())
+  MyLifePlatformerGame._scaleSprite(this)
+  // this.scale.setTo(scaleX(), scaleY())
 }
 
 // inherit from Phaser.Sprite
@@ -282,7 +285,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     this.game.load.audio('sfx:door', 'audio/door.wav')
     this.game.load.spritesheet('icon:key', 'images/key_icon.png', 34, 30)
     this.game.load.image('mathBook', 'images/genericItem_color_035.png')
-    this.game.load.audio('sfx:badge:', 'audio/badge.wav')
+    this.game.load.audio('sfx:badge', 'audio/badge.wav')
     this.game.load.image('mario', 'images/Super Mario Bros 3 (Nintendo).png')
   },
   create: function () {
@@ -312,6 +315,9 @@ MyLifePlatformerGame.PlayState.prototype = {
     this._handleInput()
     this.coinFont.text = `x${this.coinPickupCount}`
     this.keyIcon.frame = this.hasKey ? 1 : 0
+  },
+  resize: function (width, height) {
+    this.game.state.restart(true, true, {level: this.level})
   },
   _loadLevel: function (data) {
     this.bgDecoration = this.game.add.group()
