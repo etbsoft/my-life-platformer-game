@@ -131,7 +131,7 @@ MyLifePlatformerGame.MainMenu.prototype = {
 
 function Heroine (game, x, y) {
   // call Phaser.Sprite constructor
-  Phaser.Sprite.call(this, game, x, y, 'heroine')
+  Phaser.Sprite.call(this, game, x * scaleX(), y * scaleY(), 'heroine')
   this.anchor.set(0.5, 0.5)
   this.game.physics.enable(this)
   this.body.collideWorldBounds = true
@@ -140,7 +140,7 @@ function Heroine (game, x, y) {
   this.animations.add('jump', [3])
   this.animations.add('fall', [4])
   MyLifePlatformerGame._scaleSprite(this)
-  // this.scale.setTo(scaleX(), scaleY())
+  this.scale.setTo(scaleX(), scaleY())
 }
 
 // inherit from Phaser.Sprite
@@ -340,7 +340,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     this._spawnKey(data.key.x, data.key.y)
     this._spawnMathBook(data.mathBook.x, data.mathBook.y, data.mathBook.text)
     // enable gravity
-    const GRAVITY = 1200 / scaleY(1)
+    const GRAVITY = 1200 / scaleY()
     this.game.physics.arcade.gravity.y = GRAVITY
   },
   _spawnPlatform: function (platform) {
@@ -362,7 +362,7 @@ MyLifePlatformerGame.PlayState.prototype = {
       this.spiders.add(sprite)
     }, this)
     // spawn Heroine
-    this.Heroine = new Heroine(this.game, data.heroine.x * scaleX(), data.heroine.y * scaleY())
+    this.Heroine = new Heroine(this.game, data.heroine.x, data.heroine.y)
     this.game.add.existing(this.Heroine)
   },
   _spawnCoin: function (coin) {
