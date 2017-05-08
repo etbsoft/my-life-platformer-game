@@ -8,8 +8,8 @@ MyLifePlatformerGame.Params = {
   LEVEL_COUNT: 2
 }
 
-MyLifePlatformerGame._scaleSprite = function (sprite, maintainAspectRatio) {
-  var scale = this._getSpriteScale(sprite)
+MyLifePlatformerGame._scaleSprite = function (sprite, maintainAspectRatio, scale) {
+  scale = this._getSpriteScale(sprite, scale)
   if (maintainAspectRatio) {
     var maxRatio = Math.max(scale.x, scale.y)
     sprite.scale.setTo(maxRatio, maxRatio)
@@ -18,10 +18,11 @@ MyLifePlatformerGame._scaleSprite = function (sprite, maintainAspectRatio) {
   }
 }
 
-MyLifePlatformerGame._getSpriteScale = function (sprite) {
+MyLifePlatformerGame._getSpriteScale = function (sprite, scale) {
+  scale = scale || 1
   // Sprite needs to fit in either width or height
-  var widthRatio = sprite.game.canvas.width / MyLifePlatformerGame.Params.baseWidth
-  var heightRatio = sprite.game.canvas.height / MyLifePlatformerGame.Params.baseHeight
+  var widthRatio = scale * sprite.game.canvas.width / MyLifePlatformerGame.Params.baseWidth
+  var heightRatio = scale * sprite.game.canvas.height / MyLifePlatformerGame.Params.baseHeight
 
   return {x: widthRatio, y: heightRatio}
 }
@@ -245,10 +246,18 @@ MyLifePlatformerGame.PlayState.prototype = {
     this.keys = this.game.input.keyboard.addKeys({
       left: Phaser.KeyCode.LEFT,
       right: Phaser.KeyCode.RIGHT,
-      up: Phaser.KeyCode.UP
+      up: Phaser.KeyCode.UP,
+      spaceUp: Phaser.KeyCode.SPACEBAR
     })
 
     this.keys.up.onDown.add(function () {
+      let didJump = this.Heroine.jump()
+      if (didJump) {
+        this.sfx.jump.play()
+      }
+    }, this)
+
+    this.keys.spaceUp.onDown.add(function () {
       let didJump = this.Heroine.jump()
       if (didJump) {
         this.sfx.jump.play()
@@ -306,8 +315,8 @@ MyLifePlatformerGame.PlayState.prototype = {
 
     font = this.game.add.retroFont('mario', 8, 8, Phaser.RetroFont.TEXT_SET1)
 
-    var i = this.game.add.image(this.game.world.centerX, 6 * 32, font)
-    i.tint = Math.random() * 0xFFFFFF
+    var i = this.game.add.image(this.game.world.centerX, 32, font)
+    i.tint = '#012359'
     i.anchor.set(0.5, 1)
 
     this.Heroine.inputEnabled = true
@@ -327,18 +336,17 @@ MyLifePlatformerGame.PlayState.prototype = {
     // create all the groups/layers that we need
     this.platforms = this.game.add.group()
     this.coins = this.game.add.group()
+    this.badges = this.game.add.group()
     this.spiders = this.game.add.group()
     this.enemyWalls = this.game.add.group()
     this.enemyWalls.visible = false
     // spawn all platforms
     data.platforms.forEach(this._spawnPlatform, this)
     // spawn Heroine and enemies
-    this._spawnCharacters({heroine: data.heroine, coins: data.coins, spiders: data.spiders})
+    this._spawnCharacters({heroine: data.heroine, coins: data.coins, spiders: data.spiders, badges: data.badges})
     // spawn important objects
-    data.coins.forEach(this._spawnCoin, this)
     this._spawnDoor(data.door.x, data.door.y)
     this._spawnKey(data.key.x, data.key.y)
-    this._spawnMathBook(data.mathBook.x, data.mathBook.y, data.mathBook.text)
     // enable gravity
     const GRAVITY = 1200 / scaleY()
     this.game.physics.arcade.gravity.y = GRAVITY
@@ -361,6 +369,10 @@ MyLifePlatformerGame.PlayState.prototype = {
       sprite.scale.setTo(scaleX(), scaleY())
       this.spiders.add(sprite)
     }, this)
+    // spawn coins
+    data.coins.forEach(this._spawnCoin, this)
+    // spawn badges
+    data.badges.forEach(this._spawnBadge, this)
     // spawn Heroine
     this.Heroine = new Heroine(this.game, data.heroine.x, data.heroine.y)
     this.game.add.existing(this.Heroine)
@@ -409,8 +421,8 @@ MyLifePlatformerGame.PlayState.prototype = {
                       function (Heroine, door) {
                         return this.hasKey && Heroine.body.touching.down
                       }, this)
-    this.game.physics.arcade.overlap(this.Heroine, this.mathBook, this._onHeroineVsBadge,
-                            null, this)
+    this.game.physics.arcade.overlap(this.Heroine, this.badges, this._onHeroineVsBadge,
+                                  null, this)
   },
   _onHeroineVsCoin: function (Heroine, coin) {
     this.sfx.coin.play()
@@ -472,18 +484,20 @@ MyLifePlatformerGame.PlayState.prototype = {
           .loop()
           .start()
   },
-  _spawnMathBook: function (x, y, text) {
-    this.mathBook = this.bgDecoration.create(x * scaleX(), y * scaleY(), 'mathBook')
-    this.mathBook.text = text
-    this.mathBook.anchor.set(0.5, 0.5)
-    this.mathBook.scale.setTo(0.5, 0.5)
-    this.game.physics.enable(this.mathBook)
-    this.mathBook.body.allowGravity = false
+  _spawnBadge: function (badge) {
+    let sprite = this.badges.create(badge.x * scaleX(), badge.y * scaleY(), badge.image)
+    sprite.text = badge.text
+    sprite.anchor.set(0.5, 0.5)
+    MyLifePlatformerGame._scaleSprite(sprite, null, 0.5)
+    // sprite.animations.add('rotate', [0, 1, 2, 1], 6, true) // 6fps, looped
+    // sprite.animations.play('rotate')
+    this.game.physics.enable(sprite)
+    sprite.body.allowGravity = false
 
     // add a small 'up & down' animation via a tween
-    this.mathBook.y -= 3
-    this.game.add.tween(this.mathBook)
-          .to({y: this.mathBook.y + 8}, 600, Phaser.Easing.Sinusoidal.InOut)
+    sprite.y -= 3
+    this.game.add.tween(sprite)
+          .to({y: sprite.y + 8}, 600, Phaser.Easing.Sinusoidal.InOut)
           .yoyo(true)
           .loop()
           .start()
@@ -493,11 +507,11 @@ MyLifePlatformerGame.PlayState.prototype = {
     key.kill()
     this.hasKey = true
   },
-  _onHeroineVsBadge: function (Heroine, mathBook) {
+  _onHeroineVsBadge: function (Heroine, badge) {
     this.sfx.badge.play()
-    font.text = mathBook.text
+    font.text = badge.text
     window.setTimeout(clearMessage, 4000)
-    mathBook.kill()
+    badge.kill()
   }
 }
 
