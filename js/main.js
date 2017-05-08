@@ -293,7 +293,12 @@ MyLifePlatformerGame.PlayState.prototype = {
     this.game.load.audio('sfx:key', 'audio/key.wav')
     this.game.load.audio('sfx:door', 'audio/door.wav')
     this.game.load.spritesheet('icon:key', 'images/key_icon.png', 34, 30)
-    this.game.load.image('mathBook', 'images/genericItem_color_035.png')
+    this.game.load.image('mathBook', 'images/genericItem_color_035.png', 84, 96)
+    this.game.load.spritesheet('femaleBaby', 'images/fbaby1.png', 32, 32)
+    this.game.load.spritesheet('soccerBall', 'images/SoccerBall.png', 99, 96)
+    this.game.load.spritesheet('basketball', 'images/Basketball.png', 99, 96)
+    this.game.load.image('madrid', 'images/madrid.png', 96, 96)
+    this.game.load.image('cobol', 'images/cobol.png', 96, 96)
     this.game.load.audio('sfx:badge', 'audio/badge.wav')
     this.game.load.image('mario', 'images/Super Mario Bros 3 (Nintendo).png')
   },
@@ -313,9 +318,11 @@ MyLifePlatformerGame.PlayState.prototype = {
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`))
     this._createHud()
 
-    font = this.game.add.retroFont('mario', 8, 8, Phaser.RetroFont.TEXT_SET1)
+    font = this.game.add.retroFont('mario', 16, 16, Phaser.RetroFont.TEXT_SET1)
+    font.multiLine = true
+    font.align = Phaser.RetroFont.ALIGN_CENTER
 
-    var i = this.game.add.image(this.game.world.centerX, 32, font)
+    var i = this.game.add.image(this.game.world.centerX, 64, font)
     i.tint = '#012359'
     i.anchor.set(0.5, 1)
 
@@ -488,9 +495,11 @@ MyLifePlatformerGame.PlayState.prototype = {
     let sprite = this.badges.create(badge.x * scaleX(), badge.y * scaleY(), badge.image)
     sprite.text = badge.text
     sprite.anchor.set(0.5, 0.5)
-    MyLifePlatformerGame._scaleSprite(sprite, null, 0.5)
-    // sprite.animations.add('rotate', [0, 1, 2, 1], 6, true) // 6fps, looped
-    // sprite.animations.play('rotate')
+    MyLifePlatformerGame._scaleSprite(sprite, null, badge.scale)
+    if (badge.animated) {
+      sprite.animations.add('rotate', [0, 1, 2, 1], 6, true) // 6fps, looped
+      sprite.animations.play('rotate')
+    }
     this.game.physics.enable(sprite)
     sprite.body.allowGravity = false
 
@@ -510,7 +519,7 @@ MyLifePlatformerGame.PlayState.prototype = {
   _onHeroineVsBadge: function (Heroine, badge) {
     this.sfx.badge.play()
     font.text = badge.text
-    window.setTimeout(clearMessage, 4000)
+    window.setTimeout(clearMessage, badge.text.length * 2000 / 30)
     badge.kill()
   }
 }

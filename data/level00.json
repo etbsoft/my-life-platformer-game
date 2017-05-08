@@ -18,11 +18,14 @@
         {"x": 819, "y": 525}, {"x": 861, "y": 525}, {"x": 903, "y": 525}
     ],
     "badges": [
-      {"x": 700, "y": 500, "text": "I studied Maths at Salamanca University", "image": "mathBook"}
+      {"x": 250, "y": 500, "text": "I was born in Bejar, Salamanca", "image": "femaleBaby", "scale": 1.7, "animated": true},
+      {"x": 525, "y": 336, "text": "At high school I played soccer all time, \nand then in the early years of college too", "image": "soccerBall", "scale": 0.3},
+      {"x": 700, "y": 500, "text": "I studied Maths at Salamanca University", "image": "mathBook", "scale": 0.5},
+      {"x": 525, "y": 500, "text": "At the end in college, I got to play basketball, \nI love playing basketball but nobody played it in Bejar", "image": "basketball", "scale": 1}
     ],
     "heroine": {"x": 21, "y": 500},
     "spiders": [
     ],
     "door": {"x": 231, "y": 546},
-    "key": {"x": 525, "y": 336}
+    "key": {"x": 903, "y": 475}
 }
