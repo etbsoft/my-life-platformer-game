@@ -23,12 +23,15 @@
         {"x": 399, "y": 294}, {"x": 357, "y": 315}, {"x": 336, "y": 357},
         {"x": 777, "y": 357}, {"x": 819, "y": 357}, {"x": 861, "y": 357}, {"x": 903, "y": 357}, {"x": 945, "y": 357},
         {"x": 189, "y": 231}, {"x": 231, "y": 231},
-        {"x": 525, "y": 147}, {"x": 567, "y": 147}, {"x": 609, "y": 147}, {"x": 651, "y": 147},
-        {"x": 819, "y": 63}, {"x": 861, "y": 63}
+        {"x": 525, "y": 147}, {"x": 567, "y": 147}, {"x": 609, "y": 147}, {"x": 651, "y": 147}
     ],
     "badges": [
         {"x": 150, "y": 500, "text": "I arrived in Madrid in 2007", "image": "madrid", "scale": 0.6},
-        {"x": 400, "y": 500, "text": "Wiht a cobol scholarship!!! ", "image": "cobol", "scale": 0.6}
+        {"x": 400, "y": 500, "text": "Wiht a cobol scholarship!!!", "image": "cobol", "scale": 0.6},
+        {"x": 800, "y": 500, "text": "Soon, I started to work at Babel, \nin a Java project \n at ISBAN", "image": "babel", "scale": 0.6},
+        {"x": 30, "y": 350, "text": "And I meet decide, \na little great company that developed \nOperational Research projects!!! \nI had to work with them and I get it.", "image": "decide", "scale": 0.6},
+        {"x": 470, "y": 290, "text": "I enjoyed working, \nI learned tons of lessons and I meet incredible people. \nI directed my career towards leadership roles, \nI even did an MBA. \nI loved my work and I feel that my work loves me, \nI was promoted very very quickly!!!", "image": "itcrowd", "scale": 0.6},
+        {"x": 841, "y": 48, "text": "But when I was here, I thought: \n'What am I doing with my life?' \nAnd I sttoped, \nI left my work and I started doing different things, \nI got into the 'startups world'", "image": "throne", "scale": 0.6}
     ],
     "heroine": {"x": 21, "y": 500},
     "spiders": [{"x": 121, "y": 399}, {"x": 800, "y": 362}, {"x": 500, "y": 147}],

@@ -299,6 +299,10 @@ MyLifePlatformerGame.PlayState.prototype = {
     this.game.load.spritesheet('basketball', 'images/Basketball.png', 99, 96)
     this.game.load.image('madrid', 'images/madrid.png', 96, 96)
     this.game.load.image('cobol', 'images/cobol.png', 96, 96)
+    this.game.load.image('babel', 'images/babel.png', 96, 96)
+    this.game.load.image('decide', 'images/decide.png', 96, 96)
+    this.game.load.image('itcrowd', 'images/itcrowd.png', 96, 96)
+    this.game.load.image('throne', 'images/throne.png', 96, 96)
     this.game.load.audio('sfx:badge', 'audio/badge.wav')
     this.game.load.image('mario', 'images/Super Mario Bros 3 (Nintendo).png')
   },
