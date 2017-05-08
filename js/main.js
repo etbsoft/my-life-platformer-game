@@ -69,27 +69,14 @@ MyLifePlatformerGame.MainMenu.prototype = {
     this.background = this.add.image(0, 0, 'welcomeBackground')
     MyLifePlatformerGame._scaleSprite(this.background, true)
 
-    this.title = this.game.add.image(this.world.centerX, this.world.centerY - this.game.height / 5, 'gametitle')
+    this.title = this.game.add.image(this.world.centerX, this.world.centerY - this.game.height / 8, 'gametitle')
     this.title.anchor.setTo(0.5)
     MyLifePlatformerGame._scaleSprite(this.title)
 
-    this.playButton = this.game.add.button(this.world.centerX, this.world.centerY + this.game.height / 5, 'onePlayerGame', this.playMyLifePlatformerGame, this)
+    this.playButton = this.game.add.button(this.world.centerX, this.world.centerY + this.game.height / 3, 'onePlayerGame', this.playMyLifePlatformerGame, this)
     this.playButton.anchor.setTo(0.5)
     this.playButton.clicked = false
 
-    this.infoButton = this.game.add.button(this.world.centerX - MyLifePlatformerGame.Params.iconSize / 2, this.world.centerY + this.game.height / 3, 'settings', this.viewGameHelp, this)
-    this.infoButton.anchor.setTo(0.5)
-    this.infoButton.frame = 9
-    this.infoButton.clicked = false
-    MyLifePlatformerGame._scaleSprite(this.infoButton, true)
-    this.infoButton.x = this.world.centerX - this.infoButton.width / 2
-
-    this.audioButton = this.game.add.button(this.world.centerX + MyLifePlatformerGame.Params.iconSize / 2, this.world.centerY + this.game.height / 3, 'settings', this.setAudio, this)
-    this.audioButton.anchor.setTo(0.5)
-    this.audioButton.frame = 5
-    this.audioButton.clicked = false
-    MyLifePlatformerGame._scaleSprite(this.audioButton, true)
-    this.audioButton.x = this.world.centerX + this.infoButton.width / 2
   },
 
   resize: function (width, height) {
