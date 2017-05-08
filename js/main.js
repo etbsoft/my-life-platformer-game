@@ -5,7 +5,7 @@ MyLifePlatformerGame.Params = {
   baseWidth: 960,
   baseHeight: 600,
   iconSize: 250,
-  LEVEL_COUNT: 2
+  LEVEL_COUNT: 3
 }
 
 MyLifePlatformerGame._scaleSprite = function (sprite, maintainAspectRatio, scale) {
@@ -266,11 +266,13 @@ MyLifePlatformerGame.PlayState.prototype = {
 
     this.coinPickupCount = 0
     this.hasKey = false
+    this.badgesCount = 0
     this.level = (data.level || 0) % MyLifePlatformerGame.Params.LEVEL_COUNT
   },
   preload: function () {
     this.game.load.json('level:0', 'data/level00.json')
     this.game.load.json('level:1', 'data/level01.json')
+    this.game.load.json('level:2', 'data/level02.json')
     this.game.load.image('background', 'images/background.png')
     this.game.load.image('welcomeBackground', 'images/welcomeBackground.png')
     this.game.load.image('ground', 'images/ground.png')
@@ -303,6 +305,10 @@ MyLifePlatformerGame.PlayState.prototype = {
     this.game.load.image('decide', 'images/decide.png', 96, 96)
     this.game.load.image('itcrowd', 'images/itcrowd.png', 96, 96)
     this.game.load.image('throne', 'images/throne.png', 96, 96)
+    this.game.load.image('osc', 'images/osc.png', 96, 96)
+    this.game.load.image('github', 'images/github.png', 96, 96)
+    this.game.load.image('intelygenz', 'images/intelygenz.png', 96, 96)
+    this.game.load.spritesheet('startgate', 'images/startgate.png', 96, 96)
     this.game.load.audio('sfx:badge', 'audio/badge.wav')
     this.game.load.image('mario', 'images/Super Mario Bros 3 (Nintendo).png')
   },
@@ -314,7 +320,8 @@ MyLifePlatformerGame.PlayState.prototype = {
       stomp: this.game.add.audio('sfx:stomp'),
       key: this.game.add.audio('sfx:key'),
       door: this.game.add.audio('sfx:door'),
-      badge: this.game.add.audio('sfx:badge')
+      badge: this.game.add.audio('sfx:badge'),
+      startgate: this.game.add.audio('sfx:door')
     }
     this.background = this.game.add.image(0, 0, 'background')
     this.background.height = this.background.height * scaleY()
@@ -326,7 +333,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     font.multiLine = true
     font.align = Phaser.RetroFont.ALIGN_CENTER
 
-    var i = this.game.add.image(this.game.world.centerX, 64, font)
+    var i = this.game.add.image(this.game.world.centerX, 96, font)
     i.tint = '#012359'
     i.anchor.set(0.5, 1)
 
@@ -338,6 +345,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     this._handleInput()
     this.coinFont.text = `x${this.coinPickupCount}`
     this.keyIcon.frame = this.hasKey ? 1 : 0
+    this.startgate.frame = this.badgesCount > 3 ? 1 : 0
   },
   resize: function (width, height) {
     this.game.state.restart(true, true, {level: this.level})
@@ -358,6 +366,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     // spawn important objects
     this._spawnDoor(data.door.x, data.door.y)
     this._spawnKey(data.key.x, data.key.y)
+    this._spawnStartGate(data.startgate.x, data.startgate.y)
     // enable gravity
     const GRAVITY = 1200 / scaleY()
     this.game.physics.arcade.gravity.y = GRAVITY
@@ -434,6 +443,11 @@ MyLifePlatformerGame.PlayState.prototype = {
                       }, this)
     this.game.physics.arcade.overlap(this.Heroine, this.badges, this._onHeroineVsBadge,
                                   null, this)
+    this.game.physics.arcade.overlap(this.Heroine, this.startgate, this._onHeroineVsStartGate,
+                      // ignore if there is no key or the player is on air
+                      function (Heroine, door) {
+                        return this.badgesCount && Heroine.body.touching.down
+                      }, this)
   },
   _onHeroineVsCoin: function (Heroine, coin) {
     this.sfx.coin.play()
@@ -454,6 +468,9 @@ MyLifePlatformerGame.PlayState.prototype = {
   _onHeroineVsDoor: function (Heroine, door) {
     this.sfx.door.play()
     this.game.state.restart(true, false, { level: this.level + 1 })
+  },
+  _onHeroineVsStartGate: function (Heroine, gate) {
+    window.location.href = 'https://teanocrata.github.io/'
   },
   _createHud: function () {
     this.keyIcon = this.game.make.image(0, 19, 'icon:key')
@@ -481,6 +498,14 @@ MyLifePlatformerGame.PlayState.prototype = {
     this.door.scale.setTo(scaleX(), scaleY())
     this.game.physics.enable(this.door)
     this.door.body.allowGravity = false
+  },
+  _spawnStartGate: function (x, y) {
+    this.startgate = this.bgDecoration.create(x * scaleX(), y * scaleY(), 'startgate')
+    this.startgate.frame = 0
+    this.startgate.anchor.setTo(0.5, 1)
+    this.startgate.scale.setTo(scaleX(), scaleY())
+    this.game.physics.enable(this.startgate)
+    this.startgate.body.allowGravity = false
   },
   _spawnKey: function (x, y) {
     this.key = this.bgDecoration.create(x * scaleX(), y * scaleY(), 'key')
@@ -525,6 +550,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     font.text = badge.text
     window.setTimeout(clearMessage, badge.text.length * 2000 / 30)
     badge.kill()
+    this.badgesCount += 1
   }
 }
 
