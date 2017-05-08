@@ -29,9 +29,9 @@
         {"x": 150, "y": 500, "text": "I arrived in Madrid in 2007", "image": "madrid", "scale": 0.6},
         {"x": 400, "y": 500, "text": "Wiht a cobol scholarship!!!", "image": "cobol", "scale": 0.6},
         {"x": 800, "y": 500, "text": "Soon, I started to work at Babel, \nin a Java project \n at ISBAN", "image": "babel", "scale": 0.6},
-        {"x": 30, "y": 350, "text": "And I meet decide, \na little great company that developed \nOperational Research projects!!! \nI had to work with them and I get it.", "image": "decide", "scale": 0.6},
-        {"x": 470, "y": 290, "text": "I enjoyed working, \nI learned tons of lessons and I meet incredible people. \nI directed my career towards leadership roles, \nI even did an MBA. \nI loved my work and I feel that my work loves me, \nI was promoted very very quickly!!!", "image": "itcrowd", "scale": 0.6},
-        {"x": 841, "y": 48, "text": "But when I was here, I thought: \n'What am I doing with my life?' \nAnd I sttoped, \nI left my work and I started doing different things, \nI got into the 'startups world'", "image": "throne", "scale": 0.6}
+        {"x": 30, "y": 350, "text": "And I met decide, \na little great company that developed \nOperational Research projects!!! \nI had to work with them and I get it.", "image": "decide", "scale": 0.6},
+        {"x": 470, "y": 290, "text": "I enjoyed working, \nI learned tons of lessons and I met incredible people. \nI directed my career towards leadership roles, \nI even did an MBA. \nI loved my work and I felt that my work loved me, \nI was promoted very very quickly!!!", "image": "itcrowd", "scale": 0.6},
+        {"x": 841, "y": 48, "text": "But when I was here, I thought: \n'What am I doing with my life?' \nAnd I stopped, \nI left my work and I started doing different things, \nI got into the 'startups world'", "image": "throne", "scale": 0.6}
     ],
     "heroine": {"x": 21, "y": 500},
     "spiders": [{"x": 121, "y": 399}, {"x": 800, "y": 362}, {"x": 500, "y": 147}],

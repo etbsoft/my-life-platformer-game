@@ -323,6 +323,7 @@ MyLifePlatformerGame.PlayState.prototype = {
     this._handleInput()
     this.coinFont.text = `x${this.coinPickupCount}`
     this.keyIcon.frame = this.hasKey ? 1 : 0
+    this.door.frame = this.hasKey ? 1 : 0
     this.startgate.frame = this.badgesCount > 3 ? 1 : 0
   },
   resize: function (width, height) {
