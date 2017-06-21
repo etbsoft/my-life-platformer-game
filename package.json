@@ -4,7 +4,7 @@
   "description": "A amazing use (I hope) of @ladybenko's HTML5 game workshop",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "browser-sync start --server --files=\"**/*.js\""
+    "dev": "browser-sync start --server --files=\"js/*.js\""
   },
   "repository": {
     "type": "git",
